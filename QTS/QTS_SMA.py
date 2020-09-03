@@ -1,7 +1,7 @@
 import csv
 import random
 stock = []
-with open('C:/Users/acus/Desktop/比賽/QTS/AAPL.csv', newline='') as csvfile:
+with open('C:/Users/acus/Desktop/Fintech/QTS/AAPL.csv', newline='') as csvfile:
     rows = csv.DictReader(csvfile)
     for row in rows:
         stock.append(row['Close'])
@@ -64,7 +64,7 @@ def QTS(stock):                                         #給股價 回傳最佳�
     gbest_prof = 0
     pworst = [0]*32
     pworst_prof = 2000000
-
+    shares = 0
     stre = [0]*4
     best_stre = [0]*4
     hold = []
@@ -92,18 +92,24 @@ def QTS(stock):                                         #給股價 回傳最佳�
                 else:
                     tmp = 1
                 if(date_ma[d-256][int(stre[0])] <= date_ma[d-256][int(stre[1])] and 
-                date_ma[d-255][int(stre[0])] > date_ma[d-255][int(stre[1])] and b == 0):
+                date_ma[d-255][int(stre[0])] > date_ma[d-255][int(stre[1])] and d != l-1 and b == 0):
                     remain = float(fund%float(stock[d]))
                     shares = int((fund-remain)/float(stock[d]))
                     fund -= shares*float(stock[d])
                     b = 1
+                    print("BUY")
+                    print(fund,stock[d],shares,remain)
                 elif(date_ma[d-256][int(stre[2])] >= date_ma[d-256][int(stre[3])] and 
                 date_ma[d-255][int(stre[2])] < date_ma[d-255][int(stre[3])] and b == 1):
                     fund += float(stock[d])*shares + remain
                     b = 0
+                    print("SELL")
+                    print(fund,stock[d],shares,remain)
                 elif(d == l-1 and b == 1):
                     fund += float(stock[d])*shares + remain
                     b = 0
+                    print("SELL")
+                    print(fund,stock[d],shares,remain)
                 if(b == 1):
                     hold.append(float(stock[d]))
                 else:
@@ -112,11 +118,14 @@ def QTS(stock):                                         #給股價 回傳最佳�
                     else:
                         hold.append('NaN')
             # hold,fund = fitness(date_ma,stre)
+            # print(shares)
+            # print(fund)
             if(fund > gbest_prof):
                 gbest_prof = fund
                 best_stre = stre
                 best_hold = hold
                 gbest = pm[p]
+                
             if(fund < pworst_prof):
                 pworst = pm[p]
             hold = []                                  #
@@ -139,3 +148,4 @@ def re():
     "profit":prof,"holding period":hp}
     return rdict
 d = re()
+print(d)
