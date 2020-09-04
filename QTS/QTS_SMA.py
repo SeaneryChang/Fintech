@@ -144,7 +144,7 @@ def QTS(stock):                                         #給股價 回傳最佳�
         # }        
         pworst = [0]*32
         pworst_prof = 2000000
-    ddic = {'stock price':stock,'holding period':best_hold,'profit':gbest_prof,'strategies':{'buy1':b1,'buy2':b2,'sell1':s1,'sell2':s2}}
+    ddic = {'stock price':stock[256:],'holding period':best_hold,'profit':gbest_prof,'strategies':{'buy1':b1,'buy2':b2,'sell1':s1,'sell2':s2}}
     return ddic
 def re():
     b1,b2,s1,s2,prof,hp = QTS(stock)
