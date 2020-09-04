@@ -1,32 +1,25 @@
 import csv
 import random
+import TIs as techi
 stock = []
 ID = 'AAPL'
+TI = 'sma'
 with open('C:/Users/acus/Desktop/Fintech/stock/AAPL/' + ID + '.csv', newline='') as csvfile:
     rows = csv.DictReader(csvfile)
     for row in rows:
         stock.append(row['Close'])
 def write_csv(date_ma,ID):
-    with open('C:/Users/acus/Desktop/Fintech/stock/AAPL/' + ID + '_sma.csv','w',newline='')as csvfile:
+    with open('C:/Users/acus/Desktop/Fintech/stock/AAPL/' + ID + '_sma.csv','w',newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(date_ma)
-def sma(stock):                                                     #計算訓練期每天的MA(1-256) 回傳二維陣列,stock長度
-    l = len(stock)        
-    date_ma = [[0]*256 for _ in range(l-255)]
-    numer = 0
-    denomi = 0
-    for i in range(1,l-254):                 #i代表每個訓練天數
-        for j in range(1,257):        #j代表訓練天數的MA(1-256)
-            for k in range(1,j+1):      #k計算MA[j]
-                numer += float(stock[255+i-k])
-                denomi += 1
-            date_ma[i-1][j-1] = numer/denomi
-            numer = 0
-            denomi = 0
-    # write_csv(date_ma,ID)       
-    return date_ma,l
-def fitness(stock,stre):                                           #給策略參數  回傳持有區間,收益
-    date_ma,l = sma(stock)
+def fitness(stock,stre,TI):                                           #給策略參數  回傳持有區間,收益
+    stre[0]
+    if(TI == 'sma'):
+        date_ma,l = sma(stock)
+    elif(TI == 'wma'):
+        date_ma,l = wma(stock)
+    elif(TI == 'ema'):
+        date_ma,l = ema(stock)
     fund = 1000000                                                #資金
     hold = []
     b = 0
@@ -58,8 +51,13 @@ def fitness(stock,stre):                                           #給策略參
             else:
                 hold.append('NaN')
     return hold,fund
-def QTS(stock):                                         #給股價 回傳最佳策略,收益,持有
-    date_ma,l = sma(stock)
+def QTS(stock,TI):                                         #給股價 回傳最佳策略,收益,持有
+    if(TI == 'sma'):
+        date_ma,l = techi.sma(stock)
+    elif(TI == 'wma'):
+        date_ma,l = techi.wma(stock)
+    elif(TI == 'ema'):
+        date_ma,l = techi.ema(stock)
     fund = 1000000                     #
     beta = [0.5]*32
     theta = 0.002
@@ -144,13 +142,14 @@ def QTS(stock):                                         #給股價 回傳最佳�
         # }        
         pworst = [0]*32
         pworst_prof = 2000000
-    ddic = {'stock price':stock[256:],'holding period':best_hold,'profit':gbest_prof,'strategies':{'buy1':b1,'buy2':b2,'sell1':s1,'sell2':s2}}
+    ddic = {'buy1':date_ma[b1-1][256:],'buy1':date_ma[b2-1][256:],'buy1':date_ma[s1-1][256:],'buy1':date_ma[s2-1][256:],
+    'stock price':stock[256:],'holding period':best_hold,'profit':gbest_prof,'strategy':{'buy1':b1,'buy2':b2,'sell1':s1,'sell2':s2}}
     return ddic
-def re():
-    b1,b2,s1,s2,prof,hp = QTS(stock)
-    rdict = {"Buy_1":b1,"Buy_2":b2,"Sell_1":s1,"Sell_2":s2,
-    "profit":prof,"holding period":hp}
-    return rdict
+# def re():
+#     b1,b2,s1,s2,prof,hp = QTS(stock,TI)
+#     rdict = {"Buy_1":b1,"Buy_2":b2,"Sell_1":s1,"Sell_2":s2,
+#     "profit":prof,"holding period":hp}
+#     return rdict
 for i in range(3):
     d = re()
     print(d)
